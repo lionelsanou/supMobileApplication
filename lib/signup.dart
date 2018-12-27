@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'auth.dart';
+
 
 
 class Signup extends StatelessWidget{
@@ -22,7 +22,6 @@ class SignupPage extends StatefulWidget{
 class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
 
   BaseAuth auth=new Auth();
-  final _formKey=GlobalKey<FormState>();
   String firstname;
   String lastname;
   String email;
@@ -32,8 +31,6 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
   var _emailController = TextEditingController();
   var _passwordController1 = TextEditingController();
   var _passwordController2 = TextEditingController();
-  final FocusNode _firstnameFocus = FocusNode();
-  final FocusNode _lastnameFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _usernameFocus = FocusNode();
   final FocusNode _passwordFocus1 = FocusNode();
@@ -43,7 +40,10 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
     try {
       final firebaseUser =auth.SignUpWithEmailAndPassword(_emailController.text, _passwordController1.text).then((user){
         print("The UUID of the User is $user.");
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
+        // ToDo below here I want to provide the user object instead of _userController.text
+        auth.CreateUser(user,_userController.text);
+        // ToDo below here I want to provide the user object instead of user which is the uuid obtained from signup
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp.withUser(user)));
       });
 
     }catch(e){
@@ -51,12 +51,17 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
       print(e);
     }
   }
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context){
+    // Note: This is a `GlobalKey<FormState>`
+
     return new Scaffold(
         resizeToAvoidBottomPadding: false,
-        body:ListView(
+        body:Form(
+            key: _formKey,
+            child:ListView(
             shrinkWrap: true,
             padding: const EdgeInsets.all(20.0),
             children:<Widget>[
@@ -66,6 +71,12 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                       children:<Widget>[
                         SizedBox(height: 20.0),
                         TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter the username';
+                            }
+                          },
+                          keyboardType: TextInputType.text,
                           controller: _userController,
                           textInputAction: TextInputAction.next,
                           focusNode: _usernameFocus,
@@ -86,6 +97,17 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
 
                         SizedBox(height: 20.0),
                         TextFormField(
+                          validator: (value) {
+                            Pattern pattern =
+                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                            RegExp regex = new RegExp(pattern);
+                            if (!regex.hasMatch(value))
+                              return 'Enter Valid Email';
+                            if (value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                          },
+                          keyboardType: TextInputType.emailAddress,
                           controller: _emailController,
                           textInputAction: TextInputAction.next,
                           focusNode: _emailFocus,
@@ -106,6 +128,11 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
 
                         SizedBox(height: 20.0),
                         TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                          },
                           controller:_passwordController1,
                           textInputAction: TextInputAction.next,
                           focusNode: _passwordFocus1,
@@ -122,11 +149,16 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                         ),
                         SizedBox(height: 20.0),
                         TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                          },
                           controller:_passwordController2,
                           textInputAction: TextInputAction.done,
                           focusNode: _passwordFocus2,
                           decoration: InputDecoration(
-                              labelText:'Confirm PASSWORD',
+                              labelText:'CONFIRM PASSWORD',
                               labelStyle: TextStyle(
                                   fontWeight: FontWeight.bold
                               ),
@@ -147,11 +179,16 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                                     onTap: (){
                                       //Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
                                       //print(" the information the user entered firstname:$firstname lastname:$lastname username:$username");
-                                      validateAndSubmit();
+
+                                      if (_formKey.currentState.validate()) {
+                                        print("Form is Valid");
+                                        validateAndSubmit();
+                                      }
+
                                     },
                                     child:Center(
                                         child:Text(
-                                          'Sign Up',
+                                          'SignUp',
                                           style: TextStyle(
                                               color:Colors.white,
                                               fontWeight: FontWeight.bold
@@ -175,7 +212,7 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                                     },
                                     child:Center(
                                         child:Text(
-                                          'Back To SignUp',
+                                          '<Back',
                                           style: TextStyle(
                                               color:Colors.white,
                                               fontWeight: FontWeight.bold
@@ -193,7 +230,7 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
 
             ]
 
-        )
+        ))
     );
 
   }

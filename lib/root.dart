@@ -1,22 +1,18 @@
 import "package:flutter/material.dart";
-import "main.dart";
 import "home.dart";
 import "auth.dart";
 import "landing.dart";
-import "home.dart";
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 class Root extends StatefulWidget{
 
-  Root({this.auth});
+  Root({this.auth, this.userId});
   BaseAuth auth;
+  String userId;
   @override
   State<StatefulWidget> createState() {
 
     return new RootState();
   }
-
-
-
 }
 enum AuthStatus{
   notSignedIn,
@@ -25,26 +21,39 @@ enum AuthStatus{
 
 class RootState extends State<Root>{
   AuthStatus authStatus = AuthStatus.notSignedIn;
-  @override
-  void initState() {
+  String myUserName="";
+  String userId;
 
-    super.initState();
-    widget.auth.CurrentUser().then((user){
-      print("loading $user.getEmail()");
-      setState(() {
-        authStatus=user.getUuid()==null ? AuthStatus.notSignedIn:AuthStatus.signIn;
+  @override
+  Widget build(BuildContext context)  {
+    setState(() {
+      widget.auth.CurrentUser().then((uuid){
+        print("Root Class - The Current User is : $uuid");
+        userId=uuid;
+        setState(() {
+          authStatus=uuid==null ? AuthStatus.notSignedIn:AuthStatus.signIn;
+
+        });
+        print("Root Class - about to get the current user name : $uuid");
+
+        print("the userName aaaaaaaaaaaaaaaaaa");
+
+        Firestore.instance.collection('users').document(uuid).get().then((docs){
+          myUserName=docs.data['username'];
+          print("the userName is $myUserName");
+          print("the userName isssssssssssssssssssss");
+        });
       });
     });
 
-  }
-  @override
-  Widget build(BuildContext context){
+
     switch(authStatus){
       case AuthStatus.notSignedIn:
         return LandingPage();
       case AuthStatus.signIn:
-        return MapsDemo();
+        return MapsDemo(userId:userId,userName: myUserName);
     }
     return LandingPage();
   }
+
 }

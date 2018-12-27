@@ -1,40 +1,22 @@
 class User {
-  String uuid;
-  String userName;
-  String email;
-  String longitude;
-  String latitude;
-  String message;
+  User({this.uuid,this.userName,this.email,this.longitude,this.latitude,this.message});
 
-  void setUuid(String uuid){
-    this.uuid=uuid;
-  }
-  String getUuid(){
-    return this.uuid;
-  }
-  void setUserName(String userName){
-    this.userName=userName;
-  }
-  String getUserName(){
-    return this.userName;
-  }
+  final String uuid;
+  final String userName;
+  final String email;
+  final String longitude;
+  final String latitude;
+  final String message;
 
-  void setEmail(String email){
-    this.email=email;
-  }
-  String getEmail(){
-    return this.email;
-  }
-  void setLongitude(String longitude){
-    this.longitude=longitude;
-  }
-  String getLongitude(){
-    return this.longitude;
-  }
-  void setLatitude(String latitude){
-    this.latitude=latitude;
-  }
-  String getLatitude(){
-    return this.latitude;
+  User.fromJson(Map<String,dynamic> json):
+      uuid=json['uuid'],
+      userName=json['userName'],
+      email=json['email'],
+      longitude=json['longitude'],
+      latitude=json['latitude'],
+      message=json['message'];
+
+  Map<String,dynamic> toJson(){
+    return {"uuid":uuid, "username":userName, "email":email, "logitude":longitude,"latitide":latitude};
   }
 }
