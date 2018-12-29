@@ -24,12 +24,17 @@ class MyLandingPageState extends State<LandingPage>{
         print("Landing Page ~ Sign in with Email and Password Result : $user");
         var userObject;
         String myUserName;
+        String error = user.toString();
+        print ("The Errorffff is $user");
 
-        Firestore.instance.collection('users').document('$user').get().then((docs){
-          var test=docs.data['username'];
-          print("the user object from the firestore is $test.");
+       // Firestore.instance.collection('users').document('$user').get().then((docs){
+        //  var test=docs.data['username'];
+          //print("the user object from the firestore is $test.");
 
-        });
+       // }).catchError((errorr){
+        //  String error = errorr.toString();
+         // print ("The Error is $error");
+       // });
 
         Firestore.instance.collection('users').document('$user').get().then((docs){
           if(docs.data.isNotEmpty){
@@ -143,11 +148,7 @@ class MyLandingPageState extends State<LandingPage>{
                         SizedBox(height: 20.0),
                         Container(
                             height: 40.0,
-                            child:Material(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color:Colors.green,
-                                elevation:7.0,
-                                child:GestureDetector(
+                            child:GestureDetector(
                                     onTap: (){
                                       if (_formKey.currentState.validate()) {
                                         print("Form is Valid");
@@ -156,7 +157,11 @@ class MyLandingPageState extends State<LandingPage>{
 
                                       //Navigator.push(context, MaterialPageRoute(builder: (context)=>MapsDemo()));
                                     },
-                                    child:Center(
+                                    child:Material(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        color:Colors.green,
+                                        elevation:7.0,
+                                        child:Center(
                                         child:Text(
                                           'LOGIN',
                                           style: TextStyle(
