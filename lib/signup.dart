@@ -171,11 +171,7 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                         SizedBox(height: 30.0),
                         Container(
                             height: 40.0,
-                            child:Material(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color:Colors.green,
-                                elevation:7.0,
-                                child:GestureDetector(
+                            child:GestureDetector(
                                     onTap: (){
                                       //Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
                                       //print(" the information the user entered firstname:$firstname lastname:$lastname username:$username");
@@ -186,7 +182,11 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                                       }
 
                                     },
-                                    child:Center(
+                                    child:Material(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        color:Colors.green,
+                                        elevation:7.0,
+                                        child:Center(
                                         child:Text(
                                           'SignUp',
                                           style: TextStyle(
@@ -202,15 +202,15 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                         SizedBox(height: 20.0),
                         Container(
                             height: 40.0,
-                            child:Material(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color:Colors.blue,
-                                elevation:7.0,
-                                child:GestureDetector(
+                            child:GestureDetector(
                                     onTap: (){
                                       Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
                                     },
-                                    child:Center(
+                                    child:Material(
+                                        borderRadius: BorderRadius.circular(20.0),
+                                        color:Colors.blue,
+                                        elevation:7.0,
+                                        child:Center(
                                         child:Text(
                                           '<Back',
                                           style: TextStyle(
