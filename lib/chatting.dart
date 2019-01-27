@@ -9,13 +9,15 @@ String groupChatIdString;
 class ChattingRoom extends StatelessWidget{
    String from;
    String to;
-  ChattingRoom({this.from,this.to});
+   String uuid;
+  ChattingRoom({this.uuid,this.from,this.to});
   @override
   Widget build(BuildContext context){
     print("Inside Chatting Room $to");
+    print("Inside Chatting Room the UUID $uuid");
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:new ChattingPage(fromUser:this.from,toUser:this.to)
+      home:new ChattingPage(uuid:this.uuid,fromUser:this.from,toUser:this.to)
     );
   }
 }
@@ -23,7 +25,8 @@ class ChattingRoom extends StatelessWidget{
 class ChattingPage extends StatefulWidget{
   String fromUser;
   String toUser;
-  ChattingPage({this.fromUser,this.toUser});
+  String uuid;
+  ChattingPage({this.uuid,this.fromUser,this.toUser});
   @override
   MyChattingState createState()=> new MyChattingState();
 }
@@ -111,6 +114,7 @@ Future<bool> _onBackPressed(){
   Widget build(BuildContext context) {
     String fromUser=widget.fromUser;
     String toUser=widget.toUser;
+    String uuid=widget.uuid;
     int fromHashId= fromUser.hashCode;
     int toHashId=toUser.hashCode;
     int groupChatId=0;
@@ -135,7 +139,14 @@ Future<bool> _onBackPressed(){
 
           title: new Text('$fromUser chats with $toUser'),
           actions: <Widget>[
-            new FlatButton(onPressed: () => {}, child: new Text('Profile'))
+            new FlatButton(onPressed: (){
+              print("testing $uuid");
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp.withUser(uuid)));
+            }, child: new Text('<Back')),
+            new FlatButton(onPressed: (){
+              print("testing $uuid");
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp.withUser(uuid)));
+            }, child: new Text('Profile'))
           ],
         ),
 

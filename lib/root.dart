@@ -25,27 +25,30 @@ class RootState extends State<Root>{
   String userId;
 
   @override
-  Widget build(BuildContext context)  {
+  void initState() {
     setState(() {
       widget.auth.CurrentUser().then((uuid){
         print("Root Class - The Current User is : $uuid");
         userId=uuid;
-        setState(() {
-          authStatus=uuid==null ? AuthStatus.notSignedIn:AuthStatus.signIn;
+        print("Root Class Build Method - about to get the current user name");
+        Firestore.instance.collection('users').document(userId).get().then((docs){
+          setState(() {
+            authStatus=uuid==null ? AuthStatus.notSignedIn:AuthStatus.signIn;
+            myUserName=docs.data['username'];
+            print("Root Class Build Method - the userName is $myUserName");
+          });
 
-        });
-        print("Root Class - about to get the current user name : $uuid");
-
-        print("the userName aaaaaaaaaaaaaaaaaa");
-
-        Firestore.instance.collection('users').document(uuid).get().then((docs){
-          myUserName=docs.data['username'];
-          print("the userName is $myUserName");
-          print("the userName isssssssssssssssssssss");
-        });
       });
     });
+    super.initState();
 
+
+
+    });
+  }
+
+  @override
+  Widget build(BuildContext context)  {
 
     switch(authStatus){
       case AuthStatus.notSignedIn:

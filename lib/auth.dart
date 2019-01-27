@@ -10,6 +10,7 @@ abstract class BaseAuth{
   Future<String> SignUpWithEmailAndPassword(String email, String password);
   Future<String> CurrentUser();
   Future<void> AddLocationToServer(String uuid,String username,double latitude,double longitude);
+  Future<void> RemoveLocationToServer(String uuid);
   Future<void> SignOut();
   void CreateUser(String uuid,String username);
   Future<QuerySnapshot> getAllUsers();
@@ -56,6 +57,10 @@ class Auth implements BaseAuth{
           'username':username,
 
         });
+  }
+
+  Future<void> RemoveLocationToServer(String uuid){
+    return Firestore.instance.collection('maps').document(uuid).delete();
   }
 
 
