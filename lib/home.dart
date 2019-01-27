@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 import 'auth.dart';
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapsDemo extends StatelessWidget {
   String userId;
@@ -18,16 +19,16 @@ class MapsDemo extends StatelessWidget {
     print("Map Page ~ My UserId is   $userId");
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: new SignupPage(userId: this.userId, userName: this.userName),
+      home: new MapPage(userId: this.userId, userName: this.userName),
     );
   }
 }
 
-class SignupPage extends StatefulWidget {
+class MapPage extends StatefulWidget {
   String userId;
   String userName;
 
-  SignupPage({this.userId, this.userName});
+  MapPage({this.userId, this.userName});
 
   static Future<void> camrecorder() async {
     List<CameraDescription> cameras = await availableCameras();
@@ -37,7 +38,7 @@ class SignupPage extends StatefulWidget {
   MySignupState createState() => new MySignupState();
 }
 
-class MySignupState extends State<SignupPage> {
+class MySignupState extends State<MapPage> {
   List<CameraDescription> cameras;
   bool _isReady = false;
   bool isTrue = true;
@@ -50,7 +51,7 @@ class MySignupState extends State<SignupPage> {
   bool mapToggle = false;
 
   void initState() {
-    super.initState();
+
     _setupCameras();
     Geolocator().getCurrentPosition().then((position) {
       setState(() {
@@ -71,6 +72,7 @@ class MySignupState extends State<SignupPage> {
     //print("biedildld $test");
 
     //print("biedildld $widget.cameras[0]");
+    super.initState();
   }
 
   //RemoveUserFromServer
@@ -102,7 +104,7 @@ class MySignupState extends State<SignupPage> {
   }
 
   populateClient() {
-    auth.getAllUsers().then((docs) {
+    Firestore.instance.collection('maps').snapshots().listen((docs) {
       if (docs.documents.isNotEmpty) {
         for (int i = 0; i < docs.documents.length; i++) {
           clients.add(docs.documents[i].data);
@@ -110,6 +112,7 @@ class MySignupState extends State<SignupPage> {
         }
       }
     });
+
   }
 
   initMarker(client) {
@@ -134,6 +137,7 @@ class MySignupState extends State<SignupPage> {
 
   void _signOut() async {
     dispose();
+    auth.RemoveUserFromServer(widget.userId);
     await auth.SignOut();
     Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
   }
@@ -142,6 +146,8 @@ class MySignupState extends State<SignupPage> {
   Widget build(BuildContext context) {
     print("my chat mate is $chatMate");
     String userNameT = widget.userName;
+    //String uuid=widget.userId;
+    //print("mhfslfjsdfjskdfsldfjsdkfj $uuid");
     return Scaffold(
         appBar: AppBar(
           title: new Text('Welcome $userNameT'),
@@ -194,10 +200,11 @@ class MySignupState extends State<SignupPage> {
                         print("myyyy chat mate is $chatMate");
                         String myUserName = widget.userName;
                         print("My user name chat is $myUserName");
+                        String uuid=widget.userId;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ChattingRoom(
+                                builder: (context) => ChattingRoom(uuid:uuid,
                                     from: myUserName, to: chatMate)));
                       },
                       child: chatMate != null

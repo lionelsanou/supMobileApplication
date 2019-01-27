@@ -36,19 +36,28 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
   final FocusNode _passwordFocus1 = FocusNode();
   final FocusNode _passwordFocus2 = FocusNode();
 
-  void validateAndSubmit() async{
+  void validateAndSubmit() async {
+    if(_passwordController1.text==_passwordController2.text){
     try {
-      final firebaseUser =auth.SignUpWithEmailAndPassword(_emailController.text, _passwordController1.text).then((user){
+      final firebaseUser = auth.SignUpWithEmailAndPassword(
+          _emailController.text, _passwordController1.text).then((user) {
         print("The UUID of the User is $user.");
         // ToDo below here I want to provide the user object instead of _userController.text
-        auth.CreateUser(user,_userController.text);
+        auth.CreateUser(user, _userController.text);
         // ToDo below here I want to provide the user object instead of user which is the uuid obtained from signup
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp.withUser(user)));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => MyApp.withUser(user)));
       });
-
-    }catch(e){
-      print(" the information the user entered firstname 2:$_userController.text lastname:$_emailController.text username:$_passwordController1.text");
+    } catch (e) {
+      print(
+          " the information the user entered firstname 2:$_userController.text lastname:$_emailController.text username:$_passwordController1.text");
       print(e);
+    }
+  }else{
+     print("Passwords are not idenity");
+     Scaffold.of(context)
+         .showSnackBar(SnackBar(content: Text('Processing Data')));
+     //_formKey.currentState.validate();
     }
   }
   final _formKey = GlobalKey<FormState>();
@@ -152,6 +161,8 @@ class MySignupState extends State<SignupPage> with WidgetsBindingObserver{
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Please enter your password';
+                            }else if(value!=_passwordController1.text){
+                              return 'Passwords Entered does not match';
                             }
                           },
                           controller:_passwordController2,
